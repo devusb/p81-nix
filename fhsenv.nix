@@ -55,9 +55,8 @@ let
         '';
 
         extraBwrapArgs = [
-            "--bind /etc/resolv.conf /etc/resolv.conf"
-            "--bind /var/lib/perimeter81 /usr/local"
-            "--bind /etc/Perimeter81 /etc/Perimeter81"
+            "--bind /var/lib/p81/local /usr/local"
+            "--bind /var/lib/p81/etc /etc/Perimeter81"
         ];
 
     };
@@ -81,7 +80,7 @@ in
 
         desktopItems = [(makeDesktopItem {
             name = "Perimeter81";
-            desktopName = "Perimeter81 Linux Agent";
+            desktopName = "Perimeter 81";
             exec = "perimeter81 %U";
             terminal = false;
             type = "Application";
@@ -89,7 +88,7 @@ in
             startupWMClass = "Perimeter81";
             comment = "Perimeter81 Linux Agent";
             mimeTypes = [
-                "x-scheme-handler/com.perimeter81.linux"
+                "x-scheme-handler/perimeter81"
             ];
             categories = [
                 "Network"

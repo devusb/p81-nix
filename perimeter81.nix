@@ -1,11 +1,11 @@
 { stdenv, dpkg, writeText }:
 stdenv.mkDerivation rec {
   pname = "perimeter81";
-  version = "8.0.4.735";
+  version = "9.0.1.843";
   src = builtins.fetchurl {
     url =
       "https://static.perimeter81.com/agents/linux/Perimeter81_${version}.deb";
-    sha256 = "sha256:0zavg1m2ywd0gk48jm3k29k8795vxbplfwr8ai4wlxc0959i4fq6";
+    sha256 = "sha256:0ys2w2yqsb45lzjrnbq9x880w1c0vn0s9chrb9w9773h4062p3ji";
   };
 
   nativeBuildInputs = [ dpkg ];
