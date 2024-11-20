@@ -51,7 +51,7 @@ let
         ] ++ extraLibs pkgs;
 
         extraBuildCommands = ''
-            mkdir -p usr/local
+            mkdir -p $out/usr/local
         '';
 
         extraBwrapArgs = [
