@@ -3,25 +3,32 @@
   pkgs,
   config,
   ...
-}: let
-  inherit (lib) mkEnableOption mdDoc mkIf mkPackageOption;
+}:
+let
+  inherit (lib)
+    mkEnableOption
+    mdDoc
+    mkIf
+    mkPackageOption
+    ;
   cfg = config.services.perimeter81;
-in {
+in
+{
   options = {
     services.perimeter81 = {
       enable = mkEnableOption (mdDoc "Perimeter81 VPN client");
-      package = mkPackageOption pkgs "perimeter81" {};
+      package = mkPackageOption pkgs "perimeter81" { };
     };
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [cfg.package];
+    environment.systemPackages = [ cfg.package ];
 
     systemd.services = {
       "perimeter81-helper-daemon" = {
         description = "Perimeter81 Helper Daemon";
-        wants = ["network.target"];
-        wantedBy = ["multi-user.target"];
+        wants = [ "network.target" ];
+        wantedBy = [ "multi-user.target" ];
         requires = [
           "network-online.target"
         ];

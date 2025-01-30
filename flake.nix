@@ -1,35 +1,75 @@
 {
   description = "Perimeter81 on Nix";
-  inputs = {nixpkgs = {url = "nixpkgs/nixos-unstable";};};
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs {inherit system;};
-    perimeter81-unwrapped = pkgs.callPackage ./perimeter81.nix {};
-    perimeter81 = pkgs.callPackage ./fhsenv.nix {inherit perimeter81-unwrapped;};
-  in rec {
-    packages.${system} = {
-      inherit perimeter81;
-    };
-    defaultPackage.${system} = packages.${system}.perimeter81;
 
-    overlays = {
-      default = _: _: {
-        perimeter81 = defaultPackage.${system};
-      };
-    };
-
-    nixosModules = {
-      perimeter81 = {
-        imports = [
-          ./module.nix
-        ];
-        nixpkgs.overlays = [
-          self.overlays.default
-        ];
-      };
-    };
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
   };
+
+  outputs =
+    {
+      self,
+      flake-parts,
+      nixpkgs,
+      ...
+    }@inputs:
+    flake-parts.lib.mkFlake { inherit inputs; } (
+      {
+        inputs,
+        lib,
+        withSystem,
+        ...
+      }:
+      {
+        imports = [
+          inputs.flake-parts.flakeModules.easyOverlay
+          inputs.treefmt-nix.flakeModule
+        ];
+        systems = [
+          "x86_64-linux"
+        ];
+        perSystem =
+          {
+            config,
+            pkgs,
+            system,
+            ...
+          }:
+          {
+            treefmt = {
+              programs.nixfmt = {
+                enable = true;
+                package = pkgs.nixfmt-rfc-style;
+              };
+              programs.mdformat.enable = true;
+            };
+
+            overlayAttrs = {
+              inherit (config.packages) perimeter81 perimeter81-unwrapped;
+            };
+
+            packages = {
+              perimeter81-unwrapped = pkgs.callPackage ./package.nix { };
+              perimeter81 = pkgs.callPackage ./fhsenv.nix { inherit (config.packages) perimeter81-unwrapped; };
+            };
+
+          };
+
+        flake = {
+          nixosModules = {
+            perimeter81 = {
+              imports = [
+                ./module.nix
+              ];
+              nixpkgs.overlays = [
+                self.overlays.default
+              ];
+            };
+            default = self.nixosModules.perimeter81;
+          };
+        };
+      }
+    );
+
 }
