@@ -24,15 +24,17 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p "$out/bin"
-    cp -R "opt" "$out"
+    mkdir -p $out
+    cp -R "opt" "$out/opt"
     cp -R "usr/share" "$out/share"
     chmod -R g-w "$out"
 
-    # Desktop file
-    mkdir -p "$out/share/applications"
-
     runHook postInstall
+  '';
+
+  postFixup = ''
+    substituteInPlace $out/share/applications/perimeter81.desktop \
+      --replace-fail '/opt/Perimeter81/perimeter81 %U' 'perimeter81 %U'
   '';
 
 }
