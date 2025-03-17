@@ -23,6 +23,7 @@ let
           libxkbcommon
           alsa-lib
           nss
+          libgbm
           libdrm
           mesa
           nspr
